@@ -1,0 +1,5 @@
+{
+  "verbose": true,
+  "transform": {},
+  "modulePathIgnorePatterns": ["../__fixtures__/nestedData.js", "../__fixtures__/obj1.js", "../__fixtures__/obj2.js"]
+}
