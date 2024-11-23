@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import axios from 'axios';
 
-const fetchData = async (url, dir = './') => {
+const fetchData = async (url, dir) => {
   const fileName = url.replace(/(^\w+:|^)\/\//, '').replace(/[./]/g, '-');
   const pathToFile = path.join(dir, `${fileName}.html`);
   console.log('path fetch:', pathToFile);
