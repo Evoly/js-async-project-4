@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "RSS Aggregator",
   "main": "./src/js/index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "jest --collect-coverage"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Evoly/js-async-project-4"
