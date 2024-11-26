@@ -5,7 +5,7 @@ import url from 'node:url';
 import axios from 'axios';
 import parse from './parse.js';
 
-const downloadLinks = (host, urls, dir) => {
+const downloadImages = (host, urls, dir) => {
   fs.mkdir(dir, { recursive: true })
     .then(() => {
       const promises = urls.map((pathToImg) => {
@@ -31,7 +31,15 @@ const downloadLinks = (host, urls, dir) => {
     .catch((e) => console.log(e));
 };
 
-const fetchData = async (link, dir) => {
+const getCss = (host, link, dir) => {
+  const newUrl = new URL(link, host);
+  const fileName = newUrl.toString().match(/[^/]+$/)[0];
+  const pathToFile = path.join(dir, `${fileName}`);
+  return axios(newUrl.toString(), { timeout: 15000 })
+    .then((response) => fs.writeFile(pathToFile, response.data));
+};
+
+const fetchData = (link, dir) => {
   const fileName = link.replace(/(^\w+:|^)\/\//, '').replace(/[./]/g, '-');
   const imgDirName = path.join(dir, `${fileName}__files`);
   const pathToFile = path.join(dir, `${fileName}.html`);
@@ -40,7 +48,12 @@ const fetchData = async (link, dir) => {
   return axios(newUrl.toString(), { timeout: 15000 })
     .then((response) => response.data)
     .then((data) => parse(data, pathToFile, `${fileName}__files`))
-    .then((urls) => downloadLinks(newUrl.toString(), urls, imgDirName))
+    .then((data) => {
+      const promise1 = downloadImages(newUrl.toString(), data.images, imgDirName);
+      const promise2 = getCss(newUrl.toString(), data.link, dir);
+      const promise3 = fs.writeFile(pathToFile, data.html);
+      return Promise.all([promise1, promise2, promise3]);
+    })
     .catch((err) => console.log(err));
 };
 

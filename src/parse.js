@@ -1,5 +1,4 @@
 import * as cheerio from 'cheerio';
-import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -11,20 +10,17 @@ console.log(getFixturePath);
 //  const data1 = fs.readFileSync(getFixturePath('after.html'), 'utf-8');
 
 const parse = (data, dir, imgPath) => {
-  console.log('dir:', dir)
-  const imgSrc = [];
   const $ = cheerio.load(data);
-  $('img').each((index, element) => {
+  const pathToImges = $('img').map((_, element) => {
     const src = $(element).attr('src');
     const imageName = src.match(/[^/]+$/)[0];
-    imgSrc.push(src);
     $(element).attr('src', `${imgPath}/${imageName}`);
+    return src;
   });
-  fs.writeFileSync(dir, $.html());
-  return imgSrc;
+  const link = $('[rel="stylesheet"]').attr('href');
+  console.log('link', link);
+  return { images: pathToImges.toArray(), link, html: $.html() };
 };
-
-//  parse(data1);
 
 export default parse;
 
